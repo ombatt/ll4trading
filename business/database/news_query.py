@@ -50,9 +50,9 @@ def get_last_news_num(numerber_of_news=50) -> [News]:
         db = TinyDB(DB_FILE_PATH)
         news_database = db.table('news')
 
-        # recupero le news degli ultimi 3 giorni
-        _3_days = datetime.now(tz.UTC) - timedelta(days=3)
-        recent_news = news_database.search(Query().date.test(lambda date_str: parse(date_str) > _3_days))
+        # recupero le news degli ultimi 2 giorni
+        _l_days = datetime.now(tz.UTC) - timedelta(days=2)
+        recent_news = news_database.search(Query().date.test(lambda date_str: parse(date_str) > _l_days))
 
         # le ordino per data decrescente
         sorted_news = sorted(
@@ -61,6 +61,7 @@ def get_last_news_num(numerber_of_news=50) -> [News]:
             reverse=True
         )
 
+        # filtro le ultime numerber_of_news
         counter = 0
         for item in sorted_news:
             if counter >= numerber_of_news: break

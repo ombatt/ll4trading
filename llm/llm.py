@@ -228,8 +228,8 @@ def llm_weight_analysis_title(news_list: List[News]) -> [News]:
     ### Role
     You are an expert energy markets analyst with deep knowledge of the factors influencing crude oil (WTI) prices.
     
-    ### Instructions 1.  
-    **Analysis:** Analyze the following list of news items in JSON format. 2.  
+    ### Instructions  
+    **Analysis:** Analyze the following list of news items in JSON format.  
     **Weighting:** Assess the importance of each news item. Assigns an indicator to each news item that indicates the relevance and 
     importance of the news in order to conduct a forecast analysis of the price of the WTI crude oil (0=low, 1=medium, 2=high).
     **Output** Provide the response strictly in JSON format. Do not include any other text or explanation outside of the JSON.
@@ -239,7 +239,7 @@ def llm_weight_analysis_title(news_list: List[News]) -> [News]:
     ```json
     {{
       "title": "title of the news given in input",
-      "analysis": "relevance of the news for forecast analysis (values: 0, 1, 2)",
+      "analysis": "relevance of the news for forecast analysis (values: 0, 1, 2). Value must be provided as integer value, not string",
     }}
     
     ### Input data in JSON format:: {json_string}"""

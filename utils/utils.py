@@ -17,6 +17,7 @@ def get_driver():
     chrome_options.add_argument("--no-sandbox")  # Opzionale: utile in ambienti Docker/CI
     chrome_options.add_argument("--disable-dev-shm-usage")  # Opzionale: risolve problemi in Docker
     chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = webdriver.Chrome(options=chrome_options)
     return driver
 

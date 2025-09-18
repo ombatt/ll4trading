@@ -2,7 +2,7 @@ import sys
 
 from langchain_community.vectorstores import Chroma
 
-from business.database.analysis_query import update_analysis_real_index
+from business.database.analysis_query import update_analysis_real_index, enrich_analysis
 from business.database.news_query import get_last_news_num, get_last_100_news_titles
 from business.rag.rag import load_and_split_markdown, create_vector_store, create_rag_chain_with_custom_prompt
 from do.hist_data import Data
@@ -18,14 +18,14 @@ from old.scrapers import Scraper
 from business.database.dbmanager import write_analysis, write_news_title, write_news_list
 from langchain_core.documents import Document
 
-
+'''
 def run_2():
     print("init")
     docs: [Document] = load_and_split_markdown()
     vector_db: Chroma = create_vector_store(docs)
     rag_chain = create_rag_chain_with_custom_prompt(vector_db)
     result = rag_chain.invoke(user_query)
-    print(result)
+    print(result)'''
 
 def retrieve_news():
     print("inizio .... ")
@@ -150,13 +150,14 @@ def retrieve_financial_analysis_prompt():
     persistenza dell'analisi su db
     '''
     #delete_doc_analysis_current_date()
+    enrich_analysis(hist_data, analysis)
     write_analysis(analysis)
     # write_to_file_analysis(str_out)
 
     '''
     aggiorna le analisi con i dati relativi a volume, differenza di prezzo, apertura e chiusura
     '''
-    update_analysis_real_index(hist_data)
+    # update_analysis_real_index(hist_data)
 
 
 '''

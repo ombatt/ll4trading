@@ -34,8 +34,8 @@ class Analysis:
             "current_price": self.current_price,
             "close_price": self.close_price,
             "close_perc": self.close_perc,
-            "price_dif": self.close_perc,
-            "advice": self.close_perc,
+            "price_dif": self.price_dif,
+            "advice": self.advice,
             "p_open": self.p_open,
             "volume": self.volume
         }

@@ -13,6 +13,7 @@ load_dotenv()
 # Imposta la chiave API
 os.environ['GOOGLE_API_KEY'] = os.getenv('GOOGLE_API_KEY')
 
+
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
@@ -22,6 +23,6 @@ def print_hi(name):
 if __name__ == '__main__':
     newsCommand.retrieve_news()
     newsCommand.retrieve_financial_analysis_prompt()
-    #hist_data: [Data] = get_crude_oil_historical_data()
-    #update_analysis_real_index(hist_data)
+    # hist_data: [Data] = get_crude_oil_historical_data()
+    # update_analysis_real_index(hist_data)
     print_analysis_det()
