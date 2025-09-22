@@ -130,12 +130,12 @@ def retrieve_financial_analysis_prompt():
     '''
     recupero i dati di chiusura storici
     '''
-    hist_data: [Data] = get_crude_oil_historical_data()
+    hist_data, current_price = get_crude_oil_historical_data()
 
     '''
     eseguo l'analisi di trend
     '''
-    current_price = get_wti_price()
+    #current_price = get_wti_price()
 
     '''
     eseguo l'analisi di trend

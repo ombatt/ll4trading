@@ -222,3 +222,26 @@ def read_last_analysis() -> [Analysis]:
         sys.exit(1)
 
     return return_list
+
+
+def read_last_analysis_dict() -> [Analysis]:
+    try:
+        db = TinyDB(DB_FILE_PATH)
+        news_database = db.table('analysis')
+
+        # recupero le analisi degli ultimi 2 giorni
+        _days = datetime.now(tz.UTC) - timedelta(days=2)
+        recent_an = news_database.search(Query().date.test(lambda date_str: parse(date_str) > _days))
+
+        # le ordino per data decrescente
+        sorted_an = sorted(
+            recent_an,
+            key=lambda doc: parse(doc["date"]),
+            reverse=True
+        )
+
+    except Exception as e:
+        print(f"Errore durante la lettura del db: {e}")
+        sys.exit(1)
+
+    return recent_an

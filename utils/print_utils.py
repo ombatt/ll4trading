@@ -1,9 +1,10 @@
 import datetime
 import textwrap
 
-from business.database.analysis_query import read_last_analysis
+from business.database.analysis_query import read_last_analysis, read_last_analysis_dict
 from do.analysis import Analysis
-from do.news import News
+import pandas as pd
+import matplotlib.pyplot as plt
 
 '''
 metodo di print dell'analisi
@@ -42,3 +43,37 @@ def print_analysis_det():
               f"\tcurrent: {an.current_price}\tdiff: {str(price_dif)}\tadvice: {an.advice}\tvolume: {volume}"
               f"\tclose: {an.close_price}\tclose %: {an.close_perc}")
         #print(f"{formatted_string}\t{an.p_short}\t{an.p_medium}\t{an.current_price}\t{an.close_price}\t{an.close_perc}")
+
+
+def print_analysis_graph():
+    an_list: [{}] = read_last_analysis_dict()
+    # Converte in DataFrame
+    df = pd.DataFrame(an_list)
+
+    # Conversioni
+    df["date"] = pd.to_datetime(df["date"])
+    df["price_dif"] = pd.to_numeric(df["price_dif"], errors="coerce").round(2)
+    df["p_short"] = pd.to_numeric(df["p_short"], errors="coerce")
+
+    # Ordiniamo per data
+    df = df.sort_values("date")
+
+    # Creiamo la figura
+    fig, ax1 = plt.subplots(figsize=(10, 5))
+
+    # Primo asse (price_dif)
+    ax1.plot(df["date"], df["price_dif"], color="tab:blue", marker="o", label="Price Dif")
+    ax1.set_xlabel("Data")
+    ax1.set_ylabel("Price Dif", color="tab:blue")
+    ax1.tick_params(axis="y", labelcolor="tab:blue")
+
+    # Secondo asse (p_short)
+    ax2 = ax1.twinx()
+    ax2.plot(df["date"], df["p_short"], color="tab:red", marker="s", label="p_short")
+    ax2.set_ylabel("p_short", color="tab:red")
+    ax2.tick_params(axis="y", labelcolor="tab:red")
+
+    # Titolo e griglia
+    plt.title("Andamento Price Dif e p_short nel tempo")
+    fig.tight_layout()
+    plt.show()

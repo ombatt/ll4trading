@@ -133,7 +133,7 @@ metodo che tramite scraping recupera gli ultimi dati storici di chiusura dell'in
 '''
 
 
-def get_crude_oil_historical_data() -> [Data]:
+def get_crude_oil_historical_data():
     driver = get_driver()
     return_list: [Data] = []
     # inizio a parsare l' articoli
@@ -158,6 +158,10 @@ def get_crude_oil_historical_data() -> [Data]:
 
         # Crea un oggetto BeautifulSoup per analizzare l'HTML
         soup = BeautifulSoup(page_html, 'html.parser')
+
+        last_price = soup.find('div', attrs={'data-test': 'instrument-price-last'}).get_text().replace(",", ".") # data-test
+        print(f'last price: {last_price}')
+        # ="instrument-price-last"
 
         # ricavo i titolo cover-title e il body dov'è contenuto il corpo dell'articolo
         data_table = soup.find('table', class_='freeze-column-w-1')
@@ -189,7 +193,7 @@ def get_crude_oil_historical_data() -> [Data]:
             if str_date != "" and str_price != "":
                 hist_data: Data = Data(str_price, str_date, str_quotation, str_quotation_open, volume)
                 return_list.append(hist_data)
-        return return_list
+        return return_list, last_price
 
     except Exception as ex:
         print("eccezione: " + ex.__str__())
