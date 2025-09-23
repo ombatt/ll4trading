@@ -25,4 +25,4 @@ if __name__ == '__main__':
     newsCommand.retrieve_financial_analysis_prompt()
     # hist_data: [Data] = get_crude_oil_historical_data()
     # update_analysis_real_index(hist_data) ..
-    print_analysis_det()
+    # print_analysis_det()
