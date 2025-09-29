@@ -16,10 +16,14 @@ def close_banner(driver: WebDriver, url: str):
     try:
         #print(f"parsing {url}")
         driver.get(url)
-        time.sleep(0.7)
         # click cookie popup
-        link = driver.find_element(By.ID, "scroll-down-btn")
-        link.click()
+        try:
+            link = driver.find_element(By.ID, "scroll-down-btn")
+            time.sleep(0.5)
+            link.click()
+        except Exception as ex:
+            # eccezione navigazione, prosegue
+            pass
         time.sleep(0.5)
         link = driver.find_element(By.CLASS_NAME, "reject-all")
         link.click()
@@ -74,7 +78,7 @@ class YahooScraper(Scraper):
 
             # ricavo i titolo cover-title e il body dov'è contenuto il corpo dell'articolo
             element_title = soup.find('h1', class_='cover-title').get_text()
-            element_body = soup.find('div', class_='atoms-wrapper')
+            element_body = soup.find('div', class_='bodyItems-wrapper')
             element_time = soup.find('time').get('datetime')
             # dt_object = datetime.fromisoformat(date.replace('Z', '+00:00')).isoformat()
 
