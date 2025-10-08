@@ -111,7 +111,11 @@ def update_analysis_real_index(hist_data: [Data]):
     # calcolo la differenza di prezzo rispetto all'analisi precedente
     current_price = last_ana_documents[0]['current_price'] if 'current_price' in last_ana_documents[0] else 0
     previous_price = last_ana_documents[1]['current_price'] if 'current_price' in last_ana_documents[1] else 0
-    price_dif = round(float(current_price), 2) - float(previous_price)
+    price_dif: float = round(float(current_price), 2) - float(previous_price)
+
+    # calcolo la differenza tra il prezzo attuale e il forecast
+    forecast_price = last_ana_documents[0]['forecast_price'] if 'forecast_price' in last_ana_documents[1] else 0
+    price_dif_forecast = round(float(current_price), 2) - float(forecast_price)
 
     current_p_shor = last_ana_documents[0]['p_short'] if 'p_short' in last_ana_documents[0] else 0
     previous_p_short = last_ana_documents[1]['p_short'] if 'p_short' in last_ana_documents[1] else 0
@@ -119,11 +123,13 @@ def update_analysis_real_index(hist_data: [Data]):
     quotation_open = last_ana_documents[0]['quotation_open'] if 'quotation_open' in last_ana_documents[0] else 0
     volume = last_ana_documents[0]['volume'] if 'volume' in last_ana_documents[0] else 0
 
+    print(f'forecast price difference: {price_dif_forecast}')
+
     # calcolo l'indicatore BUY / SELL
     advice = "FLAT"
-    if int(current_p_shor) > int(previous_p_short) and price_dif < 0.5:
+    if price_dif_forecast >= 0.5:
         advice = "BUY"
-    elif int(current_p_shor) < int(previous_p_short) and price_dif > -0.5:
+    elif price_dif_forecast <= -0.5:
         advice = "SELL"
 
     # arricchisco l'ultimo record di analisi (quindi quello appena calcolato al passaggio precedente) con le informazioni
@@ -207,6 +213,7 @@ def read_last_analysis() -> [Analysis]:
             ana = Analysis(item["p_short"],
                            item["p_medium"],
                            item["summary"],
+                           item["forecast_price"] if "forecast_price" in item else "",
                            date_obj.__str__(),
                            item["current_price"] if "current_price" in item else "",
                            item["close_price"] if "close_price" in item else "",

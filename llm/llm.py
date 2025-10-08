@@ -190,11 +190,11 @@ def llm_weight_analysis(news_list: List[News]) -> str:
     news_list_obj = [news.to_dict() for news in news_list]
     json_string = json.dumps(news_list_obj, indent=len(news_list))
 
-    prompt = f"""Given as input a list of news items in json format, you must tell me whether you consider them useful for carrying out " \
-                "an analysis for short-term investments in ETFs relating to oil (WTI, crude OIL)." \
-                "You must provide the output by enriching the json provided as input with a new "analysis" attribute within " \ 
-                which you report 0 if you don't consider it useful, 1 if you consider it partially useful and 2 if " \
-                you consider it useful. The output must be a valid json format. Here you can find the list of news: {json_string}"""
+    prompt = f"""Given as input a list of news items in json format, you must tell me whether you consider them 
+    useful for carrying out " \ "an analysis for short-term investments in ETFs relating to oil (WTI, crude OIL)." \ 
+    "You must provide the output by enriching the json provided as input with a new "analysis" attribute within " \ 
+    which you report 0 if you don't consider it useful, 1 if you consider it partially useful and 2 if " \ you 
+    consider it useful. The output must be a valid json format. Here you can find the list of news: {json_string}"""
 
     try:
         # Genera il contenuto basandosi sul prompt
@@ -244,9 +244,23 @@ def llm_weight_analysis_title(news_list: List[News]) -> [News]:
     
     ### Input data in JSON format:: {json_string}"""
 
+    #print(">>>>>>>> prompt: \n" + prompt)
+
     try:
+
+        response = model.count_tokens(
+            contents=[prompt],
+        )
+        token_count = response.total_tokens
+        print(f"Token count: {token_count}")
+
         # Genera il contenuto basandosi sul prompt
         response = model.generate_content(prompt)
+
+        if response.prompt_feedback:
+            feedback = response.prompt_feedback
+            if feedback.block_reason:
+                print("richiesta bloccata per: " + feedback.block_reason.name)
 
         # rimuovo i primi caratteri della string json '''json e gli ultimi ''' ```json ```
         # Stampa il risultato
@@ -289,7 +303,7 @@ def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [D
     ### Instructions
     1.  **Analysis:** Analyze the following list of news items in JSON format.
     2.  **Weighting:** Assess the importance of each news item using the analysis field (0=low, 1=medium, 2=high). Give higher priority to more recent news, based on the news_date field.
-    3.  **Forecast:** Based on the analysis, predict the trend of WTI crude oil prices in the short (in this case short means daily period) and medium term (in this case medium means weekly period).
+    3.  **Forecast:** Based on the analysis, predict the trend of WTI crude oil prices in the short (in this case short means daily period) and medium term (in this case medium means weekly period). Also predict the WTI price at the end of the day at UTC time 
     4.  **Output:** Provide the response strictly in JSON format. Do not include any other text or explanation outside of the JSON.
     
     ### Output Schema
@@ -298,6 +312,7 @@ def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [D
     {{
       "p_short": "short-term forecast (values: -2, -1, 0, 1, ",
       "p_medium": "medium-term forecast (values: -2, -1, 0, 1, 2)",
+      "forecast_price": "forecast wti price at the end of the day, consider UTC time,
       "summary": "summary in English of the reasoning",
       "summary_italian": "summary in Italian of the reasoning"
     }}
@@ -307,6 +322,8 @@ def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [D
     {json_string_final}
 
 """
+
+    print(">>>>>>>> prompt: \n" + prompt)
 
     try:
         # Genera il contenuto basandosi sul prompt

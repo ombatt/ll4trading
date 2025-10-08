@@ -34,6 +34,7 @@ def map_json_to_analysis(json_string: str) -> Analysis:
             data['p_short'],
             data['p_medium'],
             data['summary'],
+            float(data['forecast_price']),
             datetime.now(timezone.utc).isoformat()
         )
         return analysis

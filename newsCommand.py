@@ -142,10 +142,6 @@ def retrieve_financial_analysis_prompt():
     '''
     analysis = run_financial_analysis(news_list_retrieved, current_price, hist_data)
 
-
-    # TODO da cambiare, prima calcolo tutti i dati di analisi e poi scrivo il record invece di prima scrivere e poi
-    # aggiornare il record con i dati che mi mancano. Invece di fare la query a db devo passare l'oggetto analisi
-    # appena creato
     '''
     persistenza dell'analisi su db
     '''
