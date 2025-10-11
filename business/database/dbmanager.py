@@ -4,7 +4,6 @@ from datetime import timezone, datetime
 
 from tinydb import TinyDB, Query
 
-from utils.print_utils import print_analysis
 from do.analysis import Analysis
 from do.news import News
 from business.database.database_constants import DB_FILE_PATH
@@ -67,8 +66,6 @@ def write_analysis(obj_analysis: Analysis):
         all_news = an_table.all()
         if all_news:  # Assicurati che il database non sia vuoto
             highest_doc = max(an_table, key=lambda doc: doc.doc_id)
-            print("risultato analisi:")
-            print_analysis(highest_doc)
         else:
             print("Il database è vuoto.")
     except Exception as e:

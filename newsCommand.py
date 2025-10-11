@@ -6,6 +6,7 @@ from business.database.analysis_query import update_analysis_real_index, enrich_
 from business.database.news_query import get_last_news_num, get_last_100_news_titles
 from business.rag.rag import load_and_split_markdown, create_vector_store, create_rag_chain_with_custom_prompt
 from do.hist_data import Data
+from do.news import News
 from llm.llm import run_weight_analysis, run_financial_analysis
 
 from newsretriever.api_price import get_wti_price
@@ -13,7 +14,7 @@ from scraper.fxempire_scraper import FxEmpireScraper
 from scraper.investing_scraper import InvestingScraper, get_crude_oil_historical_data
 from scraper.yahoo_scraper import YahooScraper
 from scraper.barchart_scraper import BarChartScraper
-from utils.print_utils import print_progress
+from utils.print_utils import print_progress, print_analysis, print_analysis_obj
 from old.scrapers import Scraper
 from business.database.dbmanager import write_analysis, write_news_title, write_news_list
 from langchain_core.documents import Document
@@ -34,7 +35,7 @@ def retrieve_news():
     '''
     inizializzo i vari scraper
     '''
-    scraper_list: [Scraper] = []
+    scraper_list: list[Scraper] = []
     yscraper: Scraper = YahooScraper()
     iscraper: Scraper = InvestingScraper()
     bcscraper: Scraper = BarChartScraper()
@@ -62,11 +63,6 @@ def retrieve_news():
         news_list = s.search_for_news()
 
         '''
-        se non ho news da una fonte esco
-        '''
-        if len(news_list) == 0: sys.exit(2)
-
-        '''
         arricchisco ogni news trovata
         '''
         for idx, n in enumerate(news_list):
@@ -83,9 +79,14 @@ def retrieve_news():
                 print("non arricchisco, già presente: " + n.link)
 
     '''
+    se non ho news arricchite
+    '''
+    if len(news_list_temp) == 0: sys.exit(2)
+
+    '''
     ripulisco dalle news che non sono state arricchite
     '''
-    news_list_enriched = [n for n in news_list_temp if n.body != ""]
+    news_list_enriched: list[News] = [n for n in news_list_temp if n.body != ""]
 
     '''
     se non ho news arricchite esco
@@ -138,16 +139,16 @@ def retrieve_financial_analysis_prompt():
     #current_price = get_wti_price()
 
     '''
-    eseguo l'analisi di trend
+    eseguo l'analisi di trend (chiamata a llm)
     '''
     analysis = run_financial_analysis(news_list_retrieved, current_price, hist_data)
 
     '''
-    persistenza dell'analisi su db
+    arricchisto l'analisi dell'analisi su db
     '''
-    #delete_doc_analysis_current_date()
-    enrich_analysis(hist_data, analysis)
-    write_analysis(analysis)
+    analysis = enrich_analysis(hist_data, analysis)
+    print_analysis_obj(analysis)
+    # write_analysis(analysis)
     # write_to_file_analysis(str_out)
 
     '''
@@ -182,4 +183,4 @@ def retrieve_financial_analysis_rag():
     '''
     aggiorna le analisi con i dati di chiusura
     '''
-    update_analysis_real_index()
+    #update_analysis_real_index()

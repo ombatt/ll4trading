@@ -3,7 +3,7 @@ restituisce i doc_id delle analisi del giorno corrente
 '''
 import sys
 from datetime import datetime, timedelta
-from typing import List
+from typing import List, Any, Dict
 
 from dateutil import tz
 from dateutil.parser import parse
@@ -11,6 +11,7 @@ from tinydb import TinyDB, Query
 from tinydb.table import Document
 
 from business.database.database_constants import DB_FILE_PATH
+from business.database.dbmanager import write_analysis
 from business.database.query_utils import is_same_date
 from do.analysis import Analysis
 from do.hist_data import Data
@@ -55,7 +56,7 @@ recupera le entry di analisi più recenti
 '''
 
 
-def read_analysis() -> [{}]:
+def read_analysis() -> list[Any]:
     db = TinyDB(DB_FILE_PATH)
     analysis_table = db.table("analysis")
     all_documents = analysis_table.all()
@@ -64,10 +65,41 @@ def read_analysis() -> [{}]:
     sorted_documents = sorted(all_documents, key=lambda doc: doc.doc_id, reverse=True)
 
     # 4. Seleziona i primi 10 (gli ultimi inseriti)
-    last_documents = sorted_documents[:10]
+    last_documents = sorted_documents[:2]
 
     return last_documents
 
+
+'''
+aggiorno i dati di chiusura (prezzo chiusura / % chiusura) dei giorni precedenti
+'''
+
+def update_close_data(last_ana_documents: list[Any], hist_data: list[Data], an_table):
+    # parsing degli ultimi dati storici
+    for h_data in hist_data:
+        # ciclo sugli ultimi record nella tabella delle analisi
+        for doc in last_ana_documents:
+            # converto la data nel formato yyyy.MM.dd per confrontarla coni dati storici
+            # print(f"ID: {doc.doc_id}, data: {doc['date']}, position: {doc['p_short']}")
+            data_stringa = doc['date']
+            formato_originale = '%Y-%m-%dT%H:%M:%S.%f%z'
+            oggetto_data = datetime.strptime(data_stringa, formato_originale)
+            formato_desiderato = '%Y.%m.%d'
+            data_formattata = oggetto_data.strftime(formato_desiderato)
+            # print(f"data_formattata: {data_formattata}, h_data.date.strftime: {h_data.date.strftime('%Y.%m.%d')}")
+            # se trovo una data uguale tra dati storici e ultime analisi e nel documento di analisi non sono presenti
+            # i dati di chiusura allora aggiorno il record con la quota di chiusura e il mio esito
+            if h_data.date.strftime('%Y.%m.%d') == data_formattata:  # and 'close' not in doc
+                close: str = h_data.close[:-1]
+
+                # Aggiorna il documento usando update() e il doc_id
+                # L'espressione doc_id == doc_id_to_update trova il documento specifico.
+                an_table.update({'close_price': float(h_data.quotation.replace(",", ".")), 'close_perc': float(close)},
+                                doc_ids=[doc.doc_id])
+
+                updated_doc = an_table.get(doc_id=doc.doc_id)
+                print("dati chiusura aggiornati: " + updated_doc.__str__())
+    db = TinyDB(DB_FILE_PATH)
 
 '''
 funzione che aggiorna le entry di analisi con l'effettivo andamamento dell'indice.
@@ -76,12 +108,12 @@ Per i giorni passati aggiorna con la quotaizone di chiusura e sulla base di quel
 '''
 
 
-def update_analysis_real_index(hist_data: [Data]):
+def update_analysis_real_index(hist_data: list[Data]):
     db = TinyDB(DB_FILE_PATH)
     an_table = db.table('analysis')
 
     # recupero gli ultimi documenti di analisi
-    last_ana_documents: [{}] = read_analysis()
+    last_ana_documents: list[Any] = read_analysis()
 
     # parsing degli ultimi dati storici
     for h_data in hist_data:
@@ -106,7 +138,7 @@ def update_analysis_real_index(hist_data: [Data]):
                                 doc_ids=[doc.doc_id])
 
                 updated_doc = an_table.get(doc_id=doc.doc_id)
-                # print("doc aggiornato: " + updated_doc.__str__())
+                print("dati chiusura aggiornati: " + updated_doc.__str__())
 
     # calcolo la differenza di prezzo rispetto all'analisi precedente
     current_price = last_ana_documents[0]['current_price'] if 'current_price' in last_ana_documents[0] else 0
@@ -138,13 +170,16 @@ def update_analysis_real_index(hist_data: [Data]):
                      'advice': advice, 'p_open': quotation_open, 'volume': volume},
                     doc_ids=[len(an_table)])
 
+    update_close_data(last_ana_documents, hist_data, an_table)
 
-def enrich_analysis(hist_data: [Data], analysis: Analysis) -> Analysis:
+
+
+def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
     db = TinyDB(DB_FILE_PATH)
     an_table = db.table('analysis')
 
     # recupero gli ultimi documenti di analisi
-    last_ana_documents: [{}] = read_analysis()
+    last_ana_documents: list[Any] = read_analysis()
 
     # parsing degli ultimi dati storici
     for h_data in hist_data:
@@ -172,43 +207,45 @@ def enrich_analysis(hist_data: [Data], analysis: Analysis) -> Analysis:
     previous_price = last_ana_documents[0]['current_price'] if check_b else 0
     price_dif = round(float(current_price), 2) - float(previous_price)
 
-    current_p_shor = analysis.p_short if analysis.p_short else 0
+    # calcolo la differenza tra il prezzo attuale e il forecast
+    forecast_price = analysis.forecast_price if analysis.forecast_price else 0
+    price_dif_forecast = round(float(forecast_price), 2) - round(float(current_price), 2)
+    print(f'forecast price difference: {price_dif_forecast}')
+
+    current_p_short = analysis.p_short if analysis.p_short else 0
     previous_p_short = last_ana_documents[0]['p_short'] if check_b else 0
 
     # calcolo l'indicatore BUY / SELL
-    # TODO da implementare bene
     advice = "FLAT"
-    if int(current_p_shor) > int(previous_p_short):  # and price_dif < 0.5:
+    if price_dif_forecast >= 0.3 and float(current_p_short) > 0:
         advice = "BUY"
-    elif int(current_p_shor) < int(previous_p_short):  # and price_dif > -0.5:
+    elif price_dif_forecast <= -0.3 and float(current_p_short) < 0:
         advice = "SELL"
+    elif price_dif_forecast >= 0.5 and float(current_p_short) > 1:
+        advice = "STRONG BUY"
+    elif price_dif_forecast <= -0.5 and float(current_p_short) < -1:
+        advice = "STRONG SELL"
 
     # arricchisco l'oggetto di analisi con le informazioni
     # relative a BUY/SELL, prezzo apertura, volume e differenza di prezzo rispetto all'analisi precedente
     analysis.price_dif = round(float(current_price), 2) - float(previous_price)
     analysis.advice = advice
 
+    # aggiorno i dati di analisi storici (prezzo chiusura e percentuale)
+    update_close_data(last_ana_documents, hist_data, an_table)
+
+    # persisto l'ultima analisi
+    write_analysis(analysis)
+
     return analysis
 
 
-def read_last_analysis() -> [Analysis]:
+def read_last_analysis() -> list[Analysis]:
     return_list = []
     try:
-        db = TinyDB(DB_FILE_PATH)
-        news_database = db.table('analysis')
+        recent_an = read_last_2_days_analysis()
 
-        # recupero le analisi degli ultimi 2 giorni
-        _days = datetime.now(tz.UTC) - timedelta(days=2)
-        recent_an = news_database.search(Query().date.test(lambda date_str: parse(date_str) > _days))
-
-        # le ordino per data decrescente
-        sorted_an = sorted(
-            recent_an,
-            key=lambda doc: parse(doc["date"]),
-            reverse=True
-        )
-
-        for item in sorted_an:
+        for item in recent_an:
             date_obj = datetime.fromisoformat(item["date"].replace('Z', '+00:00'))
             ana = Analysis(item["p_short"],
                            item["p_medium"],
@@ -231,24 +268,34 @@ def read_last_analysis() -> [Analysis]:
     return return_list
 
 
-def read_last_analysis_dict() -> [Analysis]:
+def read_last_analysis_dict() -> list[Any]:
+    recent_an = {}
     try:
-        db = TinyDB(DB_FILE_PATH)
-        news_database = db.table('analysis')
-
-        # recupero le analisi degli ultimi 2 giorni
-        _days = datetime.now(tz.UTC) - timedelta(days=2)
-        recent_an = news_database.search(Query().date.test(lambda date_str: parse(date_str) > _days))
-
-        # le ordino per data decrescente
-        sorted_an = sorted(
-            recent_an,
-            key=lambda doc: parse(doc["date"]),
-            reverse=True
-        )
+        recent_an = read_last_2_days_analysis()
 
     except Exception as e:
         print(f"Errore durante la lettura del db: {e}")
         sys.exit(1)
 
     return recent_an
+
+
+'''
+estraggo le analisi degli ultii 2 giorni
+'''
+def read_last_2_days_analysis() -> list:
+    db = TinyDB(DB_FILE_PATH)
+    news_database = db.table('analysis')
+
+    # recupero le analisi degli ultimi 2 giorni
+    _days = datetime.now(tz.UTC) - timedelta(days=2)
+    recent_an = news_database.search(Query().date.test(lambda date_str: parse(date_str) > _days))
+
+    # le ordino per data decrescente
+    sorted_an = sorted(
+        recent_an,
+        key=lambda doc: parse(doc["date"]),
+        reverse=True
+    )
+
+    return sorted_an

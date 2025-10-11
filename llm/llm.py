@@ -1,6 +1,6 @@
 import json
 import os
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import List
 
 from dotenv import load_dotenv
@@ -282,7 +282,7 @@ def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [D
     model = get_geai()
 
     # data odierna
-    today = date.today()
+    today = datetime.now(timezone.utc)
     date_string = today.strftime('%Y-%m-%d')
 
     # converto le news in stringa json per il prompt
@@ -295,7 +295,7 @@ def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [D
     json_string_data_hist = json.dumps(data_list_obj, indent=len(hist_data))
     json_string_data_hist = json_string_data_hist[1:-1]
 
-    json_string_final = "[" + json_string_news + "," + json_string_data_hist + ",{\"current_date\": \"" + date_string + "\"}" + ",{\"current_oil_price\": \"" + current_price + "\"}]"
+    json_string_final = "[" + json_string_news + "," + json_string_data_hist + ",{\"current_date_time\": \"" + str(today) + "\"}" + ",{\"current_oil_price\": \"" + current_price + "\"}]"
 
     prompt = f"""### Role
     You are an expert energy markets analyst with deep knowledge of the factors influencing crude oil (WTI) prices.
@@ -303,7 +303,7 @@ def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [D
     ### Instructions
     1.  **Analysis:** Analyze the following list of news items in JSON format.
     2.  **Weighting:** Assess the importance of each news item using the analysis field (0=low, 1=medium, 2=high). Give higher priority to more recent news, based on the news_date field.
-    3.  **Forecast:** Based on the analysis, predict the trend of WTI crude oil prices in the short (in this case short means daily period) and medium term (in this case medium means weekly period). Also predict the WTI price at the end of the day at UTC time 
+    3.  **Forecast:** Based on the analysis, predict the trend of WTI crude oil prices in the short (in this case short means daily period) and medium term (in this case medium means weekly period). Also predict the WTI price at 11.00 PM UTC time 
     4.  **Output:** Provide the response strictly in JSON format. Do not include any other text or explanation outside of the JSON.
     
     ### Output Schema

@@ -20,6 +20,16 @@ def print_analysis(an):
     for r in righe:
         print(r)
 
+def print_analysis_obj(an: Analysis):
+    print("short : " + str(an.p_short))
+    print("medium: " + str(an.p_medium))
+    print("forecast price: " + str(an.forecast_price))
+    print("description:")
+    righe = textwrap.wrap(an.summary, width=100)
+    for r in righe:
+        print(r)
+
+
 '''
 metodo di print generico dell'avanzamento
 '''

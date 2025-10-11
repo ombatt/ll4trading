@@ -3,6 +3,7 @@ funzione che restituisce i titoli delle ultime 100 news inserite
 '''
 import sys
 from datetime import datetime, timedelta, date
+from typing import Dict
 
 from dateutil import tz
 from dateutil.parser import parse
@@ -13,7 +14,7 @@ from business.database.query_utils import is_yesterday_date, is_today_date
 from do.news import News
 
 
-def get_last_100_news_titles() -> [{}]:
+def get_last_100_news_titles() -> list[Dict]:
     # Connetti al tuo database
     db = TinyDB(DB_FILE_PATH)
     title_table = db.table("news_title")
@@ -44,7 +45,7 @@ recupera le ultime news più recenti (default 50) e le ordina per timestamp decr
 '''
 
 
-def get_last_news_num(numerber_of_news=50) -> [News]:
+def get_last_news_num(numerber_of_news=50) -> list[News]:
     return_list = []
     try:
         db = TinyDB(DB_FILE_PATH)

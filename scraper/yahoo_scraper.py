@@ -36,9 +36,9 @@ def close_banner(driver: WebDriver, url: str):
 
 class YahooScraper(Scraper):
 
-    def search_for_news(self) -> [News]:
+    def search_for_news(self) -> list[News]:
         driver = get_driver()
-        return_list: [News] = []
+        return_list: list[News] = []
 
         close_banner(driver, url_str)
 
