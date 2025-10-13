@@ -52,7 +52,7 @@ def print_analysis_det():
         forecast_price = an.forecast_price if an.forecast_price is not None and an.forecast_price != '' else 0
         volume = an.volume if an.volume is not None and an.volume != '' else 0
         print(f"ora: {formatted_string}\tshort: {an.p_short}\tmedium: {an.p_medium}\topen: {p_open}"
-              f"\tcurrent: {an.current_price}\tforecast: {forecast_price}\tdiff: {str(price_dif)}\tadvice: {an.advice}\tvolume: {volume}"
+              f"\tcurrent: {an.current_price}\tforecast: {forecast_price}\tdiff: {str(price_dif)}\tadvice: {an.advice}\t\tvolume: {volume}"
               f"\tclose: {an.close_price}\tclose %: {an.close_perc}")
         #print(f"{formatted_string}\t{an.p_short}\t{an.p_medium}\t{an.current_price}\t{an.close_price}\t{an.close_perc}")
 

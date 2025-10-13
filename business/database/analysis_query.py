@@ -166,7 +166,7 @@ def update_analysis_real_index(hist_data: list[Data]):
 
     # arricchisco l'ultimo record di analisi (quindi quello appena calcolato al passaggio precedente) con le informazioni
     # relative a BUY/SELL, prezzo apertura, volume e differenza di prezzo rispetto all'analisi precedente
-    an_table.update({'price_dif': round(float(current_price), 2) - float(previous_price),
+    an_table.update({'price_dif': round(float(current_price), 2) - round(float(previous_price), 2),
                      'advice': advice, 'p_open': quotation_open, 'volume': volume},
                     doc_ids=[len(an_table)])
 

@@ -17,10 +17,10 @@ rimuove le news che non hanno rilevanza ai fini dell'analisi
 '''
 
 
-def filter_news(news_list: [News]) -> [News]:
+def filter_news(news_list: list[News]) -> list[News]:
     return_news_list: List[News] = []
     # filtro le dalla lista le notizie che hanno analisi = 0 e quindi non sono significative
-    return_news_list = [n for n in news_list if int(n.analysis) > 0]
+    return_news_list = [n for n in news_list if n.analysis > 0]
     print(f"news con peso > 0: {str(len(return_news_list))}")
     return return_news_list
 
@@ -30,7 +30,7 @@ prima analisi llm per avere indicazione del trend
 '''
 
 
-def run_weight_analysis(news_list_temp: [News]) -> [News]:
+def run_weight_analysis(news_list_temp: list[News]) -> list[News]:
     '''
     prendo la lista delle notizie e la sottopongo all'analisi gemini a stock di 4 news
     altrimenti l'output di gemini è troppo grande da gestire come json
@@ -94,7 +94,7 @@ metodo che chiama llm per avere l'analisi delle news
 '''
 
 
-def run_financial_analysis(news_list: [News], current_price: str, hist_data: [Data]) -> Analysis:
+def run_financial_analysis(news_list: list[News], current_price: str, hist_data: [Data]) -> Analysis:
     str_out = llm_source_analysis(news_list, current_price, hist_data)
     analysis: Analysis = map_json_to_analysis(str_out)
     analysis.current_price = current_price
@@ -323,7 +323,7 @@ def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [D
 
 """
 
-    print(">>>>>>>> prompt: \n" + prompt)
+    # print(">>>>>>>> prompt: \n" + prompt)
 
     try:
         # Genera il contenuto basandosi sul prompt

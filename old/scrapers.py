@@ -20,7 +20,7 @@ class Scraper(ABC):
     def enrich_news(self, newsLink: News) -> News:
         pass
 
-    def search_for_news(self) -> [News]:
+    def search_for_news(self) -> list[News]:
         pass
 
     def iterate_over_news(self, news_list):

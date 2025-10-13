@@ -12,6 +12,7 @@ from llm.llm import run_weight_analysis, run_financial_analysis
 from newsretriever.api_price import get_wti_price
 from scraper.fxempire_scraper import FxEmpireScraper
 from scraper.investing_scraper import InvestingScraper, get_crude_oil_historical_data
+from scraper.teleborsa_scraper import TeleBorsaScraper
 from scraper.yahoo_scraper import YahooScraper
 from scraper.barchart_scraper import BarChartScraper
 from utils.print_utils import print_progress, print_analysis, print_analysis_obj
@@ -40,13 +41,15 @@ def retrieve_news():
     iscraper: Scraper = InvestingScraper()
     bcscraper: Scraper = BarChartScraper()
     fxscraper: Scraper = FxEmpireScraper()
+    tbscraper: Scraper = TeleBorsaScraper()
     '''
     append degli scraper
     '''
     scraper_list.append(yscraper)
     scraper_list.append(iscraper)
-    scraper_list.append(bcscraper)
+    #scraper_list.append(bcscraper)
     scraper_list.append(fxscraper)
+    scraper_list.append(tbscraper)
 
     '''
     recupero le news più recenti già presenti nella knowledge base
