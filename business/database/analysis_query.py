@@ -10,6 +10,7 @@ from dateutil.parser import parse
 from tinydb import TinyDB, Query
 from tinydb.table import Document
 
+from business.advice_logic import normalized_volume, momentum, sentiment, get_advice
 from business.database.database_constants import DB_FILE_PATH
 from business.database.dbmanager import write_analysis
 from business.database.query_utils import is_same_date
@@ -91,14 +92,15 @@ def update_close_data(last_ana_documents: list[Any], hist_data: list[Data], an_t
             # i dati di chiusura allora aggiorno il record con la quota di chiusura e il mio esito
             if h_data.date.strftime('%Y.%m.%d') == data_formattata:  # and 'close' not in doc
                 close: str = h_data.close[:-1]
+                volume: str = h_data.volume[:-1]
 
                 # Aggiorna il documento usando update() e il doc_id
                 # L'espressione doc_id == doc_id_to_update trova il documento specifico.
-                an_table.update({'close_price': float(h_data.quotation.replace(",", ".")), 'close_perc': float(close)},
+                an_table.update({'close_price': float(h_data.quotation.replace(",", ".")), 'close_perc': float(close), 'volume': volume},
                                 doc_ids=[doc.doc_id])
 
                 updated_doc = an_table.get(doc_id=doc.doc_id)
-                print("dati chiusura aggiornati: " + updated_doc.__str__())
+                print(f"dati chiusura aggiornati: {doc.doc_id}")
     db = TinyDB(DB_FILE_PATH)
 
 '''
@@ -138,7 +140,7 @@ def update_analysis_real_index(hist_data: list[Data]):
                                 doc_ids=[doc.doc_id])
 
                 updated_doc = an_table.get(doc_id=doc.doc_id)
-                print("dati chiusura aggiornati: " + updated_doc.__str__())
+                print(f"dati chiusura aggiornati: {doc.doc_id}")
 
     # calcolo la differenza di prezzo rispetto all'analisi precedente
     current_price = last_ana_documents[0]['current_price'] if 'current_price' in last_ana_documents[0] else 0
@@ -152,6 +154,8 @@ def update_analysis_real_index(hist_data: list[Data]):
     current_p_shor = last_ana_documents[0]['p_short'] if 'p_short' in last_ana_documents[0] else 0
     previous_p_short = last_ana_documents[1]['p_short'] if 'p_short' in last_ana_documents[1] else 0
 
+    current_p_med = last_ana_documents[0]['p_medium'] if 'p_medium' in last_ana_documents[0] else 0
+
     quotation_open = last_ana_documents[0]['quotation_open'] if 'quotation_open' in last_ana_documents[0] else 0
     volume = last_ana_documents[0]['volume'] if 'volume' in last_ana_documents[0] else 0
 
@@ -160,9 +164,10 @@ def update_analysis_real_index(hist_data: list[Data]):
     # calcolo l'indicatore BUY / SELL
     advice = "FLAT"
     if price_dif_forecast >= 0.5:
-        advice = "BUY"
+        advice = "BUY_"
     elif price_dif_forecast <= -0.5:
         advice = "SELL"
+
 
     # arricchisco l'ultimo record di analisi (quindi quello appena calcolato al passaggio precedente) con le informazioni
     # relative a BUY/SELL, prezzo apertura, volume e differenza di prezzo rispetto all'analisi precedente
@@ -213,6 +218,7 @@ def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
     print(f'forecast price difference: {price_dif_forecast}')
 
     current_p_short = analysis.p_short if analysis.p_short else 0
+    current_p_med = analysis.p_medium if analysis.p_medium else 0
     previous_p_short = last_ana_documents[0]['p_short'] if check_b else 0
 
     # calcolo l'indicatore BUY / SELL
@@ -226,10 +232,17 @@ def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
     elif price_dif_forecast <= -0.5 and float(current_p_short) < -1:
         advice = "STRONG SELL"
 
+    normalized_volume_val = normalized_volume(hist_data, current_price)
+    momentum_val = momentum(float(analysis.p_open.replace(",",".")), forecast_price)
+    sentiment_val = sentiment(current_p_short, current_p_med)
+    advice_idx = get_advice(normalized_volume_val, momentum_val, sentiment_val)
+    print("advice_idx = ", advice_idx)
+
     # arricchisco l'oggetto di analisi con le informazioni
     # relative a BUY/SELL, prezzo apertura, volume e differenza di prezzo rispetto all'analisi precedente
     analysis.price_dif = round(float(current_price), 2) - float(previous_price)
     analysis.advice = advice
+    analysis.advice_idx = advice_idx
 
     # aggiorno i dati di analisi storici (prezzo chiusura e percentuale)
     update_close_data(last_ana_documents, hist_data, an_table)
@@ -258,7 +271,8 @@ def read_last_analysis() -> list[Analysis]:
                            item["price_dif"] if "price_dif" in item else "",
                            item["advice"] if "advice" in item else "",
                            item["p_open"] if "p_open" in item else "",
-                           item["volume"] if "volume" in item else "")
+                           item["volume"] if "volume" in item else "",
+                           item["advice_idx"] if "advice_idx" in item else 0)
             return_list.append(ana)
 
     except Exception as e:

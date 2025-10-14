@@ -1,6 +1,8 @@
 import datetime
 import textwrap
 
+from datetime import datetime as dt
+
 from business.database.analysis_query import read_last_analysis, read_last_analysis_dict
 from do.analysis import Analysis
 import pandas as pd
@@ -42,8 +44,10 @@ def print_progress(idx_cur, idx_all):
 
 
 def print_analysis_det():
-    an_list: [Analysis] = read_last_analysis()
-    #print(f"data\tora\tshort\tmedium\tcurrent_price\tclose_price\tclose_perc:")
+    an_list: list[Analysis] = read_last_analysis()
+    print("\n")
+    print(f"DATA                    \tS\tM\tOPEN \tCURR \tFOREC\tDIF  \tADV \t\tVOL    \tCLS  \tCLS% ")
+    print(f"------------------------------------------------------------------------------------------------------------------------")
     for an in an_list:
         date_object = datetime.datetime.fromisoformat(an.date)
         formatted_string = date_object.strftime("%d-%m-%Y\t%H:%M:%S")
@@ -51,10 +55,11 @@ def print_analysis_det():
         p_open = an.p_open if an.p_open is not None and an.p_open != '' else 0
         forecast_price = an.forecast_price if an.forecast_price is not None and an.forecast_price != '' else 0
         volume = an.volume if an.volume is not None and an.volume != '' else 0
-        print(f"ora: {formatted_string}\tshort: {an.p_short}\tmedium: {an.p_medium}\topen: {p_open}"
-              f"\tcurrent: {an.current_price}\tforecast: {forecast_price}\tdiff: {str(price_dif)}\tadvice: {an.advice}\t\tvolume: {volume}"
-              f"\tclose: {an.close_price}\tclose %: {an.close_perc}")
+        print(f"{formatted_string}\t{an.p_short}\t{an.p_medium}\t{p_open}"
+              f"\t{an.current_price}\t{forecast_price}\t{str(price_dif)}\t{an.advice} {an.advice_idx}\t{volume}"
+              f"\t{an.close_price}\t{an.close_perc}")
         #print(f"{formatted_string}\t{an.p_short}\t{an.p_medium}\t{an.current_price}\t{an.close_price}\t{an.close_perc}")
+    print("\n")
 
 
 def print_analysis_graph():
@@ -89,3 +94,10 @@ def print_analysis_graph():
     plt.title("Andamento Price Dif e p_short nel tempo")
     fig.tight_layout()
     plt.show()
+
+def print_time(message: str = ""):
+    # Ottieni data e ora attuali
+    now = dt.now()
+    # Format: giorno-mese-anno ore:minuti:secondi
+    formatted = now.strftime("%d-%m-%Y %H:%M:%S")
+    print(formatted + ": " + message + "\n")

@@ -18,10 +18,13 @@ rimuove le news che non hanno rilevanza ai fini dell'analisi
 
 
 def filter_news(news_list: list[News]) -> list[News]:
-    return_news_list: List[News] = []
-    # filtro le dalla lista le notizie che hanno analisi = 0 e quindi non sono significative
-    return_news_list = [n for n in news_list if n.analysis > 0]
-    print(f"news con peso > 0: {str(len(return_news_list))}")
+    try:
+        return_news_list: List[News] = []
+        # filtro le dalla lista le notizie che hanno analisi = 0 e quindi non sono significative
+        return_news_list = [n for n in news_list if int(n.analysis) > 0]
+        print(f"news con peso > 0: {str(len(return_news_list))}")
+    except Exception as e:
+        print(f"errore nel metodo filter_news: {e}")
     return return_news_list
 
 
@@ -107,7 +110,7 @@ vecchio metodo che eseguiva l'analisi
 '''
 
 
-def run_analysis_old(news_list_temp: [News]):
+def run_analysis_old(news_list_temp: list[News]):
     '''
     prendo la lista delle notizie e la sottopongo all'analisi gemini a stock di 4 news
     altrimenti l'output di gemini è troppo grande da gestire come json
@@ -118,7 +121,7 @@ def run_analysis_old(news_list_temp: [News]):
     check: bool = True
     idx: int = 0
     i_max: int = 0
-    news_list_final: [News] = []
+    news_list_final: list[News] = []
     while check:
         if idx + i_max_i > len(news_list_temp):
             i_max = len(news_list_temp)
@@ -322,6 +325,12 @@ def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [D
     {json_string_final}
 
 """
+
+    response = model.count_tokens(
+        contents=[prompt],
+    )
+    token_count = response.total_tokens
+    print(f"Token count: {token_count}")
 
     # print(">>>>>>>> prompt: \n" + prompt)
 

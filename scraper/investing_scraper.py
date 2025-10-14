@@ -135,7 +135,7 @@ metodo che tramite scraping recupera gli ultimi dati storici di chiusura dell'in
 
 def get_crude_oil_historical_data():
     driver = get_driver()
-    return_list: [Data] = []
+    return_list: list[Data] = []
     # inizio a parsare l' articoli
     try:
         driver.get(str_hist)

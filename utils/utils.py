@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from typing import List
 
 from do.analysis import Analysis
+from do.hist_data import Data
 from do.news import News
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -82,4 +83,3 @@ def clean_json_out(str_json: str) -> str:
     indice_fine = str_json.find(sequenza_fine, inizio_contenuto)
     str_out = str_json[inizio_contenuto:indice_fine]
     return str_out
-

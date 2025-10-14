@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 class Analysis:
-    def __init__(self, p_short: str, p_medium: str, summary: str, forecast_price: float, date: str, current_price="", close_price="", close_perc="", price_dif="", advice="", p_open="", volume=""):
+    def __init__(self, p_short: str, p_medium: str, summary: str, forecast_price: float, date: str, current_price="", close_price="", close_perc="", price_dif="", advice="", p_open="", volume="", advice_idx=0):
         self.p_short = p_short
         self.p_medium = p_medium
         self.summary = summary
@@ -17,6 +17,7 @@ class Analysis:
         self.p_open = p_open
         self.volume = volume
         self.forecast_price = forecast_price
+        self.advice_idx = advice_idx
 
     def __str__(self):
         print(f"p_short:\n {self.p_short}")
@@ -34,10 +35,11 @@ class Analysis:
             "date": self.date,
             "summary": self.summary,
             "current_price": self.current_price,
+            "p_open": self.p_open,
             "close_price": self.close_price,
             "close_perc": self.close_perc,
             "price_dif": self.price_dif,
             "advice": self.advice,
-            "p_open": self.p_open,
+            "advice_idx": self.advice_idx,
             "volume": self.volume
         }

@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 class Data:
-    def __init__(self, close: float, date: str, p_quotation: float, p_quotation_open: float, volume: str):
+    def __init__(self, close: str, date: str, p_quotation: str, p_quotation_open: str, volume: str):
         self.close = close
         dt_object = datetime.strptime(date, '%d.%m.%Y').date()
         self.date = dt_object
