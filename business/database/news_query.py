@@ -130,7 +130,7 @@ cancella dal db le news che hanno lo stesso titolo delle news passate in input
 '''
 
 
-def delete_doc_news_by_tile(news: [News]):
+def delete_doc_news_by_tile(news: list[News]):
     db = TinyDB(DB_FILE_PATH)
     news_db = db.table('news')
     qr = Query()

@@ -2,9 +2,11 @@ import sys
 
 from langchain_community.vectorstores import Chroma
 
-from business.database.analysis_query import update_analysis_real_index, enrich_analysis
+from business.database.analysis_query import update_analysis_real_index, enrich_analysis, read_last_analysis
 from business.database.news_query import get_last_news_num, get_last_100_news_titles
 from business.rag.rag import load_and_split_markdown, create_vector_store, create_rag_chain_with_custom_prompt
+from configuration.configuration import Configuration
+from do.analysis import Analysis
 from do.hist_data import Data
 from do.news import News
 from llm.llm import run_weight_analysis, run_financial_analysis
@@ -123,7 +125,7 @@ metodo che recupera le news più recenti ed esegue l'analisi finanziaria tramite
 '''
 
 
-def retrieve_financial_analysis_prompt():
+def retrieve_financial_analysis_prompt(configuration: Configuration):
     '''
     recupero le news per effettuare l'analisi
     '''
@@ -137,14 +139,18 @@ def retrieve_financial_analysis_prompt():
     hist_data, current_price = get_crude_oil_historical_data()
 
     '''
-    eseguo l'analisi di trend
+    recupero da api il prezzo corrente
     '''
     #current_price = get_wti_price()
 
     '''
     eseguo l'analisi di trend (chiamata a llm)
+    oppure recupero l'ultima analisi se non chiamo llm
     '''
-    analysis = run_financial_analysis(news_list_retrieved, current_price, hist_data)
+    if configuration.config["llm_sentiment_analysis_flag"]:
+        analysis = run_financial_analysis(news_list_retrieved, current_price, hist_data)
+    else:
+        analysis: Analysis = read_last_analysis()[0]
 
     '''
     arricchisto l'analisi dell'analisi su db
@@ -157,7 +163,7 @@ def retrieve_financial_analysis_prompt():
     '''
     aggiorna le analisi con i dati relativi a volume, differenza di prezzo, apertura e chiusura
     '''
-    # update_analysis_real_index(hist_data)
+    #update_analysis_real_index(hist_data)
 
 
 '''

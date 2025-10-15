@@ -92,7 +92,7 @@ def update_close_data(last_ana_documents: list[Any], hist_data: list[Data], an_t
             # i dati di chiusura allora aggiorno il record con la quota di chiusura e il mio esito
             if h_data.date.strftime('%Y.%m.%d') == data_formattata:  # and 'close' not in doc
                 close: str = h_data.close[:-1]
-                volume: str = h_data.volume[:-1]
+                volume: str = h_data.volume
 
                 # Aggiorna il documento usando update() e il doc_id
                 # L'espressione doc_id == doc_id_to_update trova il documento specifico.
@@ -233,10 +233,9 @@ def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
         advice = "STRONG SELL"
 
     normalized_volume_val = normalized_volume(hist_data, current_price)
-    momentum_val = momentum(float(analysis.p_open.replace(",",".")), forecast_price)
+    momentum_val = momentum(float(analysis.current_price.replace(",",".")), forecast_price)
     sentiment_val = sentiment(current_p_short, current_p_med)
     advice_idx = get_advice(normalized_volume_val, momentum_val, sentiment_val)
-    print("advice_idx = ", advice_idx)
 
     # arricchisco l'oggetto di analisi con le informazioni
     # relative a BUY/SELL, prezzo apertura, volume e differenza di prezzo rispetto all'analisi precedente
@@ -295,7 +294,7 @@ def read_last_analysis_dict() -> list[Any]:
 
 
 '''
-estraggo le analisi degli ultii 2 giorni
+estraggo le analisi degli ultimi 2 giorni
 '''
 def read_last_2_days_analysis() -> list:
     db = TinyDB(DB_FILE_PATH)

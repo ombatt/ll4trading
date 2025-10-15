@@ -46,7 +46,7 @@ def print_progress(idx_cur, idx_all):
 def print_analysis_det():
     an_list: list[Analysis] = read_last_analysis()
     print("\n")
-    print(f"DATA                    \tS\tM\tOPEN \tCURR \tFOREC\tDIF  \tADV \t\tVOL    \tCLS  \tCLS% ")
+    print(f"DATA                    \tS\tM\tOPEN \tCURR \tFOREC\tDIF  \tADV \tIDX \tVOL    \tCLS  \tCLS% ")
     print(f"------------------------------------------------------------------------------------------------------------------------")
     for an in an_list:
         date_object = datetime.datetime.fromisoformat(an.date)
@@ -56,7 +56,7 @@ def print_analysis_det():
         forecast_price = an.forecast_price if an.forecast_price is not None and an.forecast_price != '' else 0
         volume = an.volume if an.volume is not None and an.volume != '' else 0
         print(f"{formatted_string}\t{an.p_short}\t{an.p_medium}\t{p_open}"
-              f"\t{an.current_price}\t{forecast_price}\t{str(price_dif)}\t{an.advice} {an.advice_idx}\t{volume}"
+              f"\t{an.current_price}\t{forecast_price}\t{str(price_dif)}\t{an.advice} \t{an.advice_idx}\t{volume}"
               f"\t{an.close_price}\t{an.close_perc}")
         #print(f"{formatted_string}\t{an.p_short}\t{an.p_medium}\t{an.current_price}\t{an.close_price}\t{an.close_perc}")
     print("\n")
