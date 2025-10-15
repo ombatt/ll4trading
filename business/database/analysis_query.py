@@ -65,8 +65,8 @@ def read_analysis() -> list[Any]:
     # 3. Ordina i documenti in base all'ID in ordine decrescente
     sorted_documents = sorted(all_documents, key=lambda doc: doc.doc_id, reverse=True)
 
-    # 4. Seleziona i primi 10 (gli ultimi inseriti)
-    last_documents = sorted_documents[:2]
+    # 4. Seleziona i primi 15 (gli ultimi inseriti)
+    last_documents = sorted_documents[:15]
 
     return last_documents
 
