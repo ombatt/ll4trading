@@ -27,7 +27,7 @@ scrive le news a db ma partendo dalla lista di news
 '''
 
 
-def write_news_list(news_list: [News]):
+def write_news_list(news_list: list[News]):
     try:
         for news in news_list:
             db = TinyDB(DB_FILE_PATH)

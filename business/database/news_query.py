@@ -14,7 +14,7 @@ from business.database.query_utils import is_yesterday_date, is_today_date
 from do.news import News
 
 
-def get_last_100_news_titles() -> list[Dict]:
+def get_last_news_titles(num: int) -> list[Dict]:
     # Connetti al tuo database
     db = TinyDB(DB_FILE_PATH)
     title_table = db.table("news_title")
@@ -22,8 +22,8 @@ def get_last_100_news_titles() -> list[Dict]:
     # Ottieni il numero totale di documenti, che corrisponde all'ID del documento più recente
     max_doc_id = len(title_table)
 
-    # Calcola il doc_id di partenza. Assicurati che non sia inferiore a 1.
-    start_doc_id = max(1, max_doc_id - 99)
+    # Calcola il doc_id di partenza per recuperare le ultime x news. Assicurati che non sia inferiore a 1.
+    start_doc_id = max(1, max_doc_id - num)
 
     # Inizializza una lista per i risultati
     ultimi_documenti = []
@@ -74,6 +74,7 @@ def get_last_news_num(numerber_of_news=50) -> list[News]:
                         date_obj.__str__())
             news.analysis = item["analysis"]
             return_list.append(news)
+            print(f"Recuperata news {news.link}")
             counter = +1
 
     except Exception as e:

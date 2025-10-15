@@ -100,7 +100,7 @@ def update_close_data(last_ana_documents: list[Any], hist_data: list[Data], an_t
                                 doc_ids=[doc.doc_id])
 
                 updated_doc = an_table.get(doc_id=doc.doc_id)
-                print(f"dati chiusura aggiornati: {doc.doc_id}")
+                #print(f"dati chiusura aggiornati: {doc.doc_id}")
     db = TinyDB(DB_FILE_PATH)
 
 '''
@@ -245,9 +245,6 @@ def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
 
     # aggiorno i dati di analisi storici (prezzo chiusura e percentuale)
     update_close_data(last_ana_documents, hist_data, an_table)
-
-    # persisto l'ultima analisi
-    write_analysis(analysis)
 
     return analysis
 

@@ -16,7 +16,10 @@ metodo di print dell'analisi
 def print_analysis(an):
     print("short : " + str(an['p_short']))
     print("medium: " + str(an['p_medium']))
+    print("current price: " + str(an['current_price']))
     print("forecast price: " + str(an['forecast_price']))
+    print("advice: " + str(an['advice']))
+    print("advice_index: " + str(an['advice_index']))
     print("description:")
     righe = textwrap.wrap(an['summary'], width=100)
     for r in righe:
@@ -26,6 +29,8 @@ def print_analysis_obj(an: Analysis):
     print("short : " + str(an.p_short))
     print("medium: " + str(an.p_medium))
     print("forecast price: " + str(an.forecast_price))
+    print("advice: " + str(an.advice))
+    print("advice_index: " + str(an.advice_idx))
     print("description:")
     righe = textwrap.wrap(an.summary, width=100)
     for r in righe:

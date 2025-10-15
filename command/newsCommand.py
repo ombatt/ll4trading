@@ -3,7 +3,7 @@ import sys
 from langchain_community.vectorstores import Chroma
 
 from business.database.analysis_query import update_analysis_real_index, enrich_analysis, read_last_analysis
-from business.database.news_query import get_last_news_num, get_last_100_news_titles
+from business.database.news_query import get_last_news_num, get_last_news_titles
 from business.rag.rag import load_and_split_markdown, create_vector_store, create_rag_chain_with_custom_prompt
 from configuration.configuration import Configuration
 from do.analysis import Analysis
@@ -56,7 +56,7 @@ def retrieve_news():
     '''
     recupero le news più recenti già presenti nella knowledge base
     '''
-    news_doc_db = get_last_100_news_titles()
+    news_doc_db = get_last_news_titles(199)
     title_to_remove = []
     if news_doc_db and len(news_doc_db) > 0:
         title_to_remove = [ndb['title'] for ndb in news_doc_db]
@@ -64,7 +64,7 @@ def retrieve_news():
     scraping di tutte le news dalla relativa fonte
     '''
     for s in scraper_list:
-        print(f"scraping nuova fonte")
+        print(f"scraping nuova fonte {s.__class__.__name__}")
         news_list = s.search_for_news()
 
         '''
@@ -156,7 +156,16 @@ def retrieve_financial_analysis_prompt(configuration: Configuration):
     arricchisto l'analisi dell'analisi su db
     '''
     analysis = enrich_analysis(hist_data, analysis)
+
+    # persisto l'ultima analisi
+    if configuration.config["llm_sentiment_analysis_flag"]:
+        write_analysis(analysis)
+
+    # stampo le ultime analisi
     print_analysis_obj(analysis)
+
+
+
     # write_analysis(analysis)
     # write_to_file_analysis(str_out)
 

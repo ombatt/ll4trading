@@ -92,13 +92,13 @@ def sentiment(short_term: str, mid_term: str) -> float:
     :return:
     '''
     weight = {"2":20, "1":15, "-1":-15, "-2":-20, "0":0}
-    short_const = 20
-    mid_const = 10
-    sentiment_val: float = weight[str(short_term)]*short_const + weight[str(mid_term)]*mid_const
+    short_const = 10
+    mid_const = 3
+    sentiment_val: float = (weight[str(short_term)]*short_const) + (weight[str(mid_term)]*mid_const)
     print(f"sentiment_val = {sentiment_val}")
     return sentiment_val
 
 def get_advice(pres_val: float, momentum_val: float, sentiment_val: float) -> float:
-    advice_index: float = round((0.2*pres_val) + (0.6*momentum_val) + (0.2*sentiment_val),2)
+    advice_index: float = round((0.3*pres_val) + (0.6*momentum_val) + (0.1*sentiment_val),2)
     print(f"advice_index = {advice_index}")
     return advice_index

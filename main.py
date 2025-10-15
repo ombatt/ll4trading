@@ -21,13 +21,16 @@ def print_hi(name):
 if __name__ == '__main__':
     print_time("INIZIO ESECUZIONE")
 
+    # recupero le configurazioni
     configuration: Configuration = Configuration()
 
+    # scraping delle news
     if configuration.config["read_news_flag"]:
         newsCommand.retrieve_news()
 
+    # analisi e calcolo della previsione
     newsCommand.retrieve_financial_analysis_prompt(configuration)
-    # hist_data: [Data] = get_crude_oil_historical_data()
-    # update_analysis_real_index(hist_data) ..
+
+    # stampo lo storico delle analisi
     print_analysis_det()
     print_time("FINE ESECUZIONE")
