@@ -233,7 +233,7 @@ def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
         advice = "STRONG SELL"
 
     normalized_volume_val = normalized_volume(hist_data, current_price)
-    momentum_val = momentum(float(analysis.current_price.replace(",",".")), forecast_price)
+    momentum_val = momentum(float(analysis.current_price.replace(",",".")), forecast_price, float(analysis.p_open.replace(",",".")))
     sentiment_val = sentiment(current_p_short, current_p_med)
     advice_idx = get_advice(normalized_volume_val, momentum_val, sentiment_val)
 

@@ -1,3 +1,4 @@
+from business.database.hist_data_query import get_vol_momentum
 from do.hist_data import Data
 
 
@@ -49,7 +50,7 @@ def normalized_volume(hist_data: list[Data], current_price: float) -> float:
     """
     # coefficiente da correggere
     coef = 10
-    average = get_volume_average(hist_data)
+    average = get_vol_momentum()
    # determino il segno del movimento (riazista, ribassista, neutro
     price_var = 0
     if float(current_price) - float(hist_data[0].quotation_open.replace(",",".")) > 0.1:
@@ -62,16 +63,17 @@ def normalized_volume(hist_data: list[Data], current_price: float) -> float:
     return normalized_volume_val
 
 
-def momentum(price_current: float, price_forecast) -> float:
+def momentum(price_current: float, price_forecast: float, p_open: float) -> float:
     '''
     funzione che calcolo il momenutum, indicatore cruciale per l'indicazione
-    :param price_open:
+    :param p_open:
+    :param price_current:
     :param price_forecast:
     :return:
     '''
-    delta = price_forecast - price_current
-    delta_percent = delta / price_current * 100
-    momentum_val: float = limita_compatto(delta_percent, -50, 50)
+    delta_curr = (price_current - p_open) / p_open
+    delta_for = (price_forecast - price_current) / price_current
+    momentum_val: float = delta_for*0.7 + delta_curr*0.3
     print(f"momentum_val = {momentum_val}")
     return momentum_val
 

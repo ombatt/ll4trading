@@ -86,7 +86,9 @@ def retrieve_news():
     '''
     se non ho news arricchite
     '''
-    if len(news_list_temp) == 0: sys.exit(2)
+    if len(news_list_temp) == 0:
+        print("nessuna nuova news trovata, terminazione programma")
+        sys.exit(2)
 
     '''
     ripulisco dalle news che non sono state arricchite
@@ -96,7 +98,9 @@ def retrieve_news():
     '''
     se non ho news arricchite esco
     '''
-    if len(news_list_enriched) == 0: sys.exit(1)
+    if len(news_list_enriched) == 0:
+        print("non ho news arricchite, terminazione programma")
+        sys.exit(1)
 
     print(f"{len(news_list_enriched)} news arricchite")
 
@@ -141,7 +145,7 @@ def retrieve_financial_analysis_prompt(configuration: Configuration):
     '''
     recupero da api il prezzo corrente
     '''
-    #current_price = get_wti_price()
+    current_price = get_wti_price()
 
     '''
     eseguo l'analisi di trend (chiamata a llm)

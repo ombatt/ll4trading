@@ -45,7 +45,7 @@ recupera le ultime news più recenti (default 50) e le ordina per timestamp decr
 '''
 
 
-def get_last_news_num(numerber_of_news=50) -> list[News]:
+def get_last_news_num(number_of_news=50) -> list[News]:
     return_list = []
     try:
         db = TinyDB(DB_FILE_PATH)
@@ -64,8 +64,9 @@ def get_last_news_num(numerber_of_news=50) -> list[News]:
 
         # filtro le ultime numerber_of_news
         counter = 0
+        tmp_list = []
         for item in sorted_news:
-            if counter >= numerber_of_news: break
+            if counter >= number_of_news: break
             date_obj = datetime.fromisoformat(item["date"].replace('Z', '+00:00'))
             news = News(item["title"],
                         item["link"],
@@ -73,9 +74,13 @@ def get_last_news_num(numerber_of_news=50) -> list[News]:
                         item["source"],
                         date_obj.__str__())
             news.analysis = item["analysis"]
-            return_list.append(news)
-            print(f"Recuperata news {news.link}")
-            counter = +1
+            tmp_list.append(news.link)
+
+            # controllo per evitare di valutare news doppie
+            if news.analysis not in tmp_list:
+                return_list.append(news)
+                print(f"Recuperata news {news.link}")
+                counter = +1
 
     except Exception as e:
         print(f"Errore durante la lettura del db: {e}")

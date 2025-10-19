@@ -14,7 +14,7 @@ from selenium.webdriver.chrome.options import Options
 def get_driver():
     chrome_options = Options()
     chrome_options.add_argument("--disk-cache-size=0")
-    chrome_options.add_argument("--headless")  # Abilita la modalità headless
+    # chrome_options.add_argument("--headless")  # Abilita la modalità headless
     chrome_options.add_argument("--no-sandbox")  # Opzionale: utile in ambienti Docker/CI
     chrome_options.add_argument("--disable-dev-shm-usage")  # Opzionale: risolve problemi in Docker
     chrome_options.add_argument("--disable-gpu")

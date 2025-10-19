@@ -105,4 +105,4 @@ def print_time(message: str = ""):
     now = dt.now()
     # Format: giorno-mese-anno ore:minuti:secondi
     formatted = now.strftime("%d-%m-%Y %H:%M:%S")
-    print(formatted + ": " + message + "\n")
+    print("\n" + formatted + ": " + message + "\n")
