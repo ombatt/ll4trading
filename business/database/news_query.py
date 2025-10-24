@@ -74,13 +74,13 @@ def get_last_news_num(number_of_news=50) -> list[News]:
                         item["source"],
                         date_obj.__str__())
             news.analysis = item["analysis"]
-            tmp_list.append(news.link)
 
             # controllo per evitare di valutare news doppie
-            if news.analysis not in tmp_list:
+            if news.link not in tmp_list:
                 return_list.append(news)
                 print(f"Recuperata news {news.link}")
                 counter = +1
+                tmp_list.append(news.link)
 
     except Exception as e:
         print(f"Errore durante la lettura del db: {e}")

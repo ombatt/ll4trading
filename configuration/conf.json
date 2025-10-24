@@ -1,4 +1,23 @@
 {
   "llm_sentiment_analysis_flag" : true,
-  "read_news_flag" : true
+  "read_news_flag" : true,
+  "write_analysis_flag" : true,
+  "normalized_volume_max_val" : 200,
+  "normalized_volume_coef" : 100,
+  "normalized_volume_positive_limit" : 0,
+  "normalized_volume_negative_limit" : 0,
+  "momentum_max_val" : 1200,
+  "momentum_delta_forecast" : 0.7,
+  "momentum_delta_current" : 0.3,
+  "sentiment_max_val" : 260,
+  "sentiment_short_const" : 10,
+  "sentiment_middle_const" : 3,
+  "setiment_matrix_0" : 0,
+  "setiment_matrix_1" : 15,
+  "setiment_matrix_2" : 20,
+  "setiment_matrix_m1" : -15,
+  "setiment_matrix_m2" : -20,
+  "advice_pres_val" : 0.3,
+  "advice_momentum_val" : 0.6,
+  "advice_sentiment_val" : 0.1
 }

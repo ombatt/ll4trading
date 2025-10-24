@@ -18,9 +18,10 @@ def get_vol_momentum():
     vol_rap: float = vol_avg / 12 * res
     return round(vol_rap, 2)
 
-def get_avg_h_volume(hour=None):
+def get_avg_h_volume(hour=None, days=14):
     """
     calcola la media delle ultime 2 settimane dei volumi nella fascia oraria corrente
+    :param days:
     :param hour:
     :return:
     """
@@ -30,22 +31,27 @@ def get_avg_h_volume(hour=None):
         hour = hour_0.strftime("%H:%M:%S")
 
     # recupero i documenti
-    docs: list = read_last_2_weeks_hist_data(hour)
+    docs: list = read_last_days_hist_data(hour, days)
 
     # calcolo la media
     vol_amount: float = 0
     for doc in docs:
         vol_amount += doc['volume']
-    vol_avg = vol_amount / len(docs)
+
+    try:
+        vol_avg = vol_amount / len(docs)
+    except ZeroDivisionError:
+        vol_avg = 1
 
     print("volume average: ", vol_avg)
     return vol_avg
 
 
 
-def read_last_2_weeks_hist_data(hour: str):
+def read_last_days_hist_data(hour: str, days: int):
     """
     estraggo i dati delle ultime due settimane
+    :param days:
     :param hour:
     :return:
     """
@@ -55,12 +61,12 @@ def read_last_2_weeks_hist_data(hour: str):
     Data = Query()
 
     # Calcola la data di due settimane fa
-    two_weeks_ago = datetime.now().date() - timedelta(weeks=2)
+    days_ago = datetime.now().date() - timedelta(days=days)
 
     # Filtra i documenti
     results = hist_database.search(
         (Data.time == hour) &
-        (Data.date.test(lambda d: datetime.strptime(d, "%Y-%m-%d").date() >= two_weeks_ago))
+        (Data.date.test(lambda d: datetime.strptime(d, "%Y-%m-%d").date() >= days_ago))
     )
 
     return results

@@ -11,7 +11,7 @@ from do.hist_data import Data
 from do.news import News
 from llm.llm import run_weight_analysis, run_financial_analysis
 
-from newsretriever.api_price import get_wti_price
+from newsretriever.api_price import get_wti_price, write_hist_data
 from scraper.fxempire_scraper import FxEmpireScraper
 from scraper.investing_scraper import InvestingScraper, get_crude_oil_historical_data
 from scraper.teleborsa_scraper import TeleBorsaScraper
@@ -59,7 +59,7 @@ def retrieve_news():
     news_doc_db = get_last_news_titles(199)
     title_to_remove = []
     if news_doc_db and len(news_doc_db) > 0:
-        title_to_remove = [ndb['title'] for ndb in news_doc_db]
+        title_to_remove = [ndb['title'].strip() for ndb in news_doc_db]
     '''
     scraping di tutte le news dalla relativa fonte
     '''
@@ -129,7 +129,14 @@ metodo che recupera le news più recenti ed esegue l'analisi finanziaria tramite
 '''
 
 
-def retrieve_financial_analysis_prompt(configuration: Configuration):
+def retrieve_financial_analysis_prompt():
+    configuration = Configuration()
+
+    '''
+    popolo il db con i dati storici se necessario
+    '''
+    #write_hist_data()
+
     '''
     recupero le news per effettuare l'analisi
     '''
@@ -145,7 +152,9 @@ def retrieve_financial_analysis_prompt(configuration: Configuration):
     '''
     recupero da api il prezzo corrente
     '''
-    current_price = get_wti_price()
+    # current_price = get_wti_price()
+    if current_price is None or current_price == "":
+        sys.exit(3)
 
     '''
     eseguo l'analisi di trend (chiamata a llm)
@@ -162,13 +171,11 @@ def retrieve_financial_analysis_prompt(configuration: Configuration):
     analysis = enrich_analysis(hist_data, analysis)
 
     # persisto l'ultima analisi
-    if configuration.config["llm_sentiment_analysis_flag"]:
+    if configuration.config["write_analysis_flag"]:
         write_analysis(analysis)
 
     # stampo le ultime analisi
     print_analysis_obj(analysis)
-
-
 
     # write_analysis(analysis)
     # write_to_file_analysis(str_out)

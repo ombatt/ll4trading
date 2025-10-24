@@ -23,13 +23,14 @@ if __name__ == '__main__':
 
     # recupero le configurazioni
     configuration: Configuration = Configuration()
+    print(f"configurazione: {configuration.config}")
 
     # scraping delle news
     if configuration.config["read_news_flag"]:
         newsCommand.retrieve_news()
 
     # analisi e calcolo della previsione
-    newsCommand.retrieve_financial_analysis_prompt(configuration)
+    newsCommand.retrieve_financial_analysis_prompt()
 
     # stampo lo storico delle analisi
     print_analysis_det()

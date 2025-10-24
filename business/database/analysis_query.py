@@ -221,21 +221,24 @@ def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
     current_p_med = analysis.p_medium if analysis.p_medium else 0
     previous_p_short = last_ana_documents[0]['p_short'] if check_b else 0
 
-    # calcolo l'indicatore BUY / SELL
-    advice = "FLAT"
-    if price_dif_forecast >= 0.3 and float(current_p_short) > 0:
-        advice = "BUY"
-    elif price_dif_forecast <= -0.3 and float(current_p_short) < 0:
-        advice = "SELL"
-    elif price_dif_forecast >= 0.5 and float(current_p_short) > 1:
-        advice = "STRONG BUY"
-    elif price_dif_forecast <= -0.5 and float(current_p_short) < -1:
-        advice = "STRONG SELL"
 
-    normalized_volume_val = normalized_volume(hist_data, current_price)
+    # calcolo l'indice BUY / SELL, come prima cosa calcolo i 3 indicatori
+    normalized_volume_val = normalized_volume(hist_data[0].volume, hist_data[0].quotation_open, current_price)
     momentum_val = momentum(float(analysis.current_price.replace(",",".")), forecast_price, float(analysis.p_open.replace(",",".")))
     sentiment_val = sentiment(current_p_short, current_p_med)
+    # calcolo l'indice sintetico con i 3 indicatori
     advice_idx = get_advice(normalized_volume_val, momentum_val, sentiment_val)
+
+    # calcolo l'indicatore BUY / SELL
+    advice = "FLAT"
+    if 115 <= advice_idx < 200:
+        advice = "BUY"
+    elif -200 < advice_idx <= -115:
+        advice = "SELL"
+    elif advice_idx >= 200:
+        advice = "STRONG BUY"
+    elif advice_idx <= -200:
+        advice = "STRONG SELL"
 
     # arricchisco l'oggetto di analisi con le informazioni
     # relative a BUY/SELL, prezzo apertura, volume e differenza di prezzo rispetto all'analisi precedente
