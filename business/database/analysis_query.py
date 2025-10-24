@@ -214,12 +214,14 @@ def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
 
     # calcolo la differenza tra il prezzo attuale e il forecast
     forecast_price = analysis.forecast_price if analysis.forecast_price else 0
-    price_dif_forecast = round(float(forecast_price), 2) - round(float(current_price), 2)
-    print(f'forecast price difference: {price_dif_forecast}')
+    # price_dif_forecast = round(float(forecast_price), 2) - round(float(current_price), 2)
+    # print(f'forecast_price: {forecast_price}')
+    # print(f'current_price: {current_price}')
+    # print(f'forecast price difference: {price_dif_forecast}')
 
     current_p_short = analysis.p_short if analysis.p_short else 0
     current_p_med = analysis.p_medium if analysis.p_medium else 0
-    previous_p_short = last_ana_documents[0]['p_short'] if check_b else 0
+    # previous_p_short = last_ana_documents[0]['p_short'] if check_b else 0
 
 
     # calcolo l'indice BUY / SELL, come prima cosa calcolo i 3 indicatori
@@ -231,13 +233,13 @@ def enrich_analysis(hist_data: list[Data], analysis: Analysis) -> Analysis:
 
     # calcolo l'indicatore BUY / SELL
     advice = "FLAT"
-    if 115 <= advice_idx < 200:
+    if 0.30 <= advice_idx <= 0.59:
         advice = "BUY"
-    elif -200 < advice_idx <= -115:
+    elif -0.59 <= advice_idx <= -0.30:
         advice = "SELL"
-    elif advice_idx >= 200:
+    elif advice_idx >= 0.6:
         advice = "STRONG BUY"
-    elif advice_idx <= -200:
+    elif advice_idx <= -0.6:
         advice = "STRONG SELL"
 
     # arricchisco l'oggetto di analisi con le informazioni

@@ -12,6 +12,13 @@ def run_archiver():
     live_db = TinyDB(DB_FILE_PATH)
 
     '''
+    creo il file db di archivio
+    '''
+    now = datetime.now()
+    now_str = now.strftime("%Y-%m-%d_%H:%M:%S")
+    archive_db = TinyDB("db_1_"+now_str+".json")
+
+    '''
     gestisco la cancellazione del db dei titoli delle news (non le archivio, le cancello)
     '''
     news_title_db = live_db.table('news_title')
@@ -24,24 +31,15 @@ def run_archiver():
         docs_to_archive = news_title_docs[:num_to_move]  # i più vecchi
 
         # Inserisci nello storico
-        #archive_db.insert_multiple(docs_to_archive)
+        archive_db.insert_multiple(docs_to_archive)
 
         # Cancella dal live i documenti spostati
         for doc in docs_to_archive:
-            #news_title_db.remove(doc_ids=[doc.doc_id])
-            pass
+            news_title_db.remove(doc_ids=[doc.doc_id])
 
         print(f"🏷️ Cancellati {num_to_move} news_title da db_1.json")
     else:
         print("✅ Nessun documento da spostare")
-
-
-    '''
-    creo il file db di archivio
-    '''
-    now = datetime.now()
-    now_str = now.strftime("%Y-%m-%d_%H:%M:%S")
-    archive_db = TinyDB("db_1_"+now_str+".json")
 
 
     '''
@@ -53,17 +51,17 @@ def run_archiver():
     # Se il numero di documenti supera la soglia
     if len(news_docs) > MAX_RECORDS:
         # Calcola quanti spostare
-        num_to_move = len(news_title_docs) - MAX_RECORDS
+        num_to_move = len(news_docs) - MAX_RECORDS
         docs_to_archive = sorted(news_docs, key=lambda d: d["date"])
+        docs_to_archive = docs_to_archive[:num_to_move]  # i più vecchi
 
         # Inserisci nello storico
         archive_db_news = archive_db.table('news')
         archive_db_news.insert_multiple(docs_to_archive)
 
         # Cancella dal live i documenti spostati
-        for doc in news_docs:
-            #news_db.remove(doc_ids=[doc.doc_id])
-            pass
+        for doc in docs_to_archive:
+            news_db.remove(doc_ids=[doc.doc_id])
 
         print(f"🏷️ Cancellati {num_to_move} news da db_1.json")
     else:
@@ -79,17 +77,17 @@ def run_archiver():
     # Se il numero di documenti supera la soglia
     if len(analysis_docs) > MAX_RECORDS:
         # Calcola quanti spostare
-        num_to_move = len(news_title_docs) - MAX_RECORDS
+        num_to_move = len(analysis_docs) - MAX_RECORDS
         docs_to_archive = sorted(analysis_docs, key=lambda d: d["date"])
+        docs_to_archive = docs_to_archive[:num_to_move]  # i più vecchi
 
         # Inserisci nello storico
         archive_db_analysis = archive_db.table('analysis')
         archive_db_analysis.insert_multiple(docs_to_archive)
 
         # Cancella dal live i documenti spostati
-        for doc in news_docs:
-            #news_db.remove(doc_ids=[doc.doc_id])
-            pass
+        for doc in docs_to_archive:
+            news_db.remove(doc_ids=[doc.doc_id])
 
         print(f"🏷️ Cancellati {num_to_move} analysis da db_1.json")
     else:

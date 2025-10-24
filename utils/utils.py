@@ -28,7 +28,7 @@ metodo che mappa il json di output di analisi di trend nell'oggetto Analysis
 '''
 
 
-def map_json_to_analysis(json_string: str) -> Analysis:
+def map_json_to_analysis(json_string: str) -> Analysis | None:
     try:
         data = json.loads(json_string)
         analysis: Analysis = Analysis(

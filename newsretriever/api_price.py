@@ -105,24 +105,29 @@ def get_volume_mean():
 
         # condizione esclusione oggi e data corrente
         # timestamp attuale consapevole del fuso orario UTC
-        adesso_utc = pd.Timestamp.now(tz='UTC')
+        adesso_utc = pd.Timestamp.now(tz='Europe/Rome')
+        data.index = data.index.tz_convert('Europe/Rome')
         #fuso orario di New York
-        new_york_tz = 'America/New_York'
-        adesso_new_york = adesso_utc.tz_convert(new_york_tz)
+        #new_york_tz = 'America/New_York'
+        #DEST_TZ = 'Europe/Rome'
+        #adesso_new_york = adesso_utc.tz_convert(new_york_tz)
 
-        adesso_new_york_ora = adesso_new_york.hour
+        adesso_ora = adesso_utc.hour
         adesso_new_york_ora_fuso = False
 
         # creo le condizioni con data diversa da oggi e orario minore
-        condizione_esclusione_oggi = data.index.date != adesso_new_york.date()
-        condizione_ora = data.index.hour <= adesso_new_york_ora
+        condizione_esclusione_oggi = data.index.date != adesso_utc.date()
+        condizione_ora = data.index.hour <= adesso_ora
+        #condizione_ora = data.index.hour
         condizione_finale = condizione_esclusione_oggi & condizione_ora
         data_filtrato_no_oggi = data[condizione_finale]
 
-        for d in data.iloc:
+        '''for d in data.iloc:
             timestamp = d.name
             dt = timestamp.date()
-            is_week_end = dt.weekday() >= 5
+            d['day'] = d['day'].astype(str)
+            d['day'] = dt.strftime("YYYY-MM-DD")
+            is_week_end = dt.weekday() >= 5'''
         # condizione inclusione oggi e ora corrente
         # oggi = pd.to_datetime(date.today())
         # condizione_inclusione_oggi = data.index.date == oggi.date()

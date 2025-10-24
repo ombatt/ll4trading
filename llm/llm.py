@@ -97,7 +97,7 @@ metodo che chiama llm per avere l'analisi delle news
 '''
 
 
-def run_financial_analysis(news_list: list[News], current_price: str, hist_data: [Data]) -> Analysis:
+def run_financial_analysis(news_list: list[News], current_price: str, hist_data: list[Data]) -> Analysis:
     str_out = llm_source_analysis(news_list, current_price, hist_data)
     analysis: Analysis = map_json_to_analysis(str_out)
     analysis.current_price = current_price
@@ -280,7 +280,7 @@ metodo che fornisce l'analisi del trend in base alle news fornite
 '''
 
 
-def llm_source_analysis(news_list: List[News], current_price: str, hist_data: [Data]) -> str:
+def llm_source_analysis(news_list: List[News], current_price: str, hist_data: list[Data]) -> str | None:
     # ottengo il modello
     model = get_geai()
 

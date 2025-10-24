@@ -58,6 +58,8 @@ def normalized_volume(hist_data_volume: str, hist_data_open: str, current_price:
     # coefficiente da correggere
     coef = configuration.config["normalized_volume_coef"]
     average = get_volume_mean()
+    hist_data_volume = convert_string_to_number(hist_data_volume)
+    print(f"hist_data_volume: {hist_data_volume}")
    # determino il segno del movimento (rialzista, ribassista, neutro
     price_var = 0
     if float(current_price) - float(hist_data_open.replace(",",".")) > configuration.config["normalized_volume_positive_limit"]:
@@ -65,8 +67,7 @@ def normalized_volume(hist_data_volume: str, hist_data_open: str, current_price:
     elif float(current_price) - float(hist_data_open.replace(",",".")) < configuration.config["normalized_volume_negative_limit"]:
         price_var = -1
     print(f"Price var: {price_var}")
-    print(f"hist_data_volume: {hist_data_volume}")
-    normalized_volume_val = convert_string_to_number(hist_data_volume) / average * price_var * coef
+    normalized_volume_val = hist_data_volume / average * price_var * coef
     normalized_volume_val = limita_compatto(normalized_volume_val / max_val)
     print(f"normalized_volume_val = {normalized_volume_val}")
     return normalized_volume_val
