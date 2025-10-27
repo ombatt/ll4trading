@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pandas as pd
 from tinydb import TinyDB
 
 from business.database.database_constants import DB_FILE_PATH
@@ -92,3 +93,10 @@ def run_archiver():
         print(f"🏷️ Cancellati {num_to_move} analysis da db_1.json")
     else:
         print("✅ Nessun documento analysis da spostare")
+
+def export_to_csv(database: str, table: str):
+    db = TinyDB(database)
+    analysis_db = db.table(table)
+    analysis_docs = analysis_db.all()
+    df = pd.DataFrame.from_records(analysis_docs)
+    df.to_csv(table+"-"+database.replace(".json","")+'.csv', index=False)

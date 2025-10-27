@@ -107,6 +107,7 @@ def get_volume_mean():
         # timestamp attuale consapevole del fuso orario UTC
         adesso_utc = pd.Timestamp.now(tz='Europe/Rome')
         data.index = data.index.tz_convert('Europe/Rome')
+        data.to_csv('wti.csv', index=True)
         #fuso orario di New York
         #new_york_tz = 'America/New_York'
         #DEST_TZ = 'Europe/Rome'
