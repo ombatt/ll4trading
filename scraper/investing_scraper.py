@@ -38,14 +38,20 @@ def close_banner(driver: WebDriver, url: str):
         # print("eccezione cookies, proseguo")
 
 
+'''
+metodo che tramite scraping recupera gli ultimi dati storici di chiusura dell'indice WTI
+'''
+
+
 class InvestingScraper(Scraper):
 
-    def search_for_news(self):
-        return_list: [News] = []
+    def search_for_news(self, str_link: str = None) -> list[News]:
+        return_list: list[News] = []
 
         # chiudo il banner
         driver = get_driver()
-        close_banner(driver, url_str)
+        s_link = str_link if str_link else url_str
+        close_banner(driver, s_link)
 
         try:
             page_html = driver.page_source
@@ -126,11 +132,6 @@ class InvestingScraper(Scraper):
             print("scarto news : " + news.link)
         driver.quit()
         return news
-
-
-'''
-metodo che tramite scraping recupera gli ultimi dati storici di chiusura dell'indice WTI
-'''
 
 
 def get_crude_oil_historical_data():

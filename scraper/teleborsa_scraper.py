@@ -38,7 +38,7 @@ class TeleBorsaScraper(Scraper):
     per teleborsa non ricerco le news, parso solamente la pagina dell'analisi tecnica giornaliera.
     Creo quindi una sola news con il titolo relativo alla chiusura dell'ultima data come riportato dal sito. Es: Chiusura del 10 ottobre
     '''
-    def search_for_news(self) -> list[News]:
+    def search_for_news(self, str_line: str = None) -> list[News]:
         driver = get_driver()
         return_list: list[News] = []
 

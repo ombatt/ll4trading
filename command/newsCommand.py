@@ -78,6 +78,7 @@ def retrieve_news():
                 news_list_temp.append(s.enrich_news(n))
                 '''
                 aggiorno la tabella dei titoli per scartare eventuali news uguali derivati da futuri scraping
+                TODO da verificare, ma meglio spostare questa scrittura quandi si persiste la news compelta
                 '''
                 write_news_title(n)
             else:

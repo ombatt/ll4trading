@@ -44,7 +44,7 @@ def run_weight_analysis(news_list_temp: list[News]) -> list[News]:
     check: bool = True
     idx: int = 0
     i_max: int = 0
-    news_list_final: [News] = []
+    news_list_final: list[News] = []
     while check:
         if idx + i_max_i > len(news_list_temp):
             i_max = len(news_list_temp)

@@ -2,6 +2,7 @@
   "llm_sentiment_analysis_flag" : true,
   "read_news_flag" : true,
   "write_analysis_flag" : true,
+  "headless_mode_flag" : false,
   "normalized_volume_max_val" : 200,
   "normalized_volume_coef" : 100,
   "normalized_volume_positive_limit" : 0,

@@ -27,10 +27,11 @@ scrive le news a db ma partendo dalla lista di news
 '''
 
 
-def write_news_list(news_list: list[News]):
+def write_news_list(news_list: list[News], db_file_path: str = None):
     try:
+        db_file_path = DB_FILE_PATH if db_file_path is None else db_file_path
         for news in news_list:
-            db = TinyDB(DB_FILE_PATH)
+            db = TinyDB(db_file_path)
             news_db = db.table('news')
             news_db.insert(news.to_dict())
     except Exception as e:

@@ -3,6 +3,7 @@ import textwrap
 from datetime import datetime, timezone
 from typing import List
 
+from configuration.configuration import Configuration
 from do.analysis import Analysis
 from do.hist_data import Data
 from do.news import News
@@ -12,14 +13,29 @@ from selenium.webdriver.chrome.options import Options
 
 
 def get_driver():
+    configuration: Configuration = Configuration()
+
+    # scraping delle news
     chrome_options = Options()
     chrome_options.add_argument("--disk-cache-size=0")
-    # chrome_options.add_argument("--headless")  # Abilita la modalità headless
+    # chrome_options.add_argument("--window-size=1920,1080")
+    chrome_options.add_argument("--disable-extensions")
+
+    if configuration.config["headless_mode_flag"]:
+        chrome_options.add_argument("--headless=new")  # Abilita la modalità headless
+    else:
+        user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        chrome_options.add_argument(f'user-agent={user_agent}')
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+
     chrome_options.add_argument("--no-sandbox")  # Opzionale: utile in ambienti Docker/CI
     chrome_options.add_argument("--disable-dev-shm-usage")  # Opzionale: risolve problemi in Docker
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
     driver = webdriver.Chrome(options=chrome_options)
+    driver.execute_script('Object.defineProperty(navigator, "webdriver", {get: () => undefined})')
+    driver.set_window_size(100, 100)
     return driver
 
 

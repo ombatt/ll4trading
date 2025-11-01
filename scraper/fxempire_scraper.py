@@ -30,11 +30,12 @@ def close_banner(driver: WebDriver, url: str):
 
 class FxEmpireScraper(Scraper):
 
-    def search_for_news(self) -> list[News]:
+    def search_for_news(self, str_link : str = None) -> list[News]:
         driver = get_driver()
         return_list: list[News] = []
 
-        close_banner(driver, url_str)
+        s_link = str_link if str_link else url_str
+        close_banner(driver, s_link)
 
         page_html = driver.page_source
 

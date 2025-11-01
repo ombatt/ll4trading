@@ -1,0 +1,8 @@
+(.venv1) omar.battistotti@GCQP2MQLW2 ll4trading % launchctl unload ~/Library/LaunchAgents/com.omar.pythonjob.plist
+(.venv1) omar.battistotti@GCQP2MQLW2 ll4trading % launchctl load ~/Library/LaunchAgents/com.omar.pythonjob.plist
+(.venv1) omar.battistotti@GCQP2MQLW2 ll4trading % rm /tmp/pythonjob.stdout
+
+
+schedulatore su mac
+rm /tmp/pythonjob.stdout
+launchctl load ~/Library/LaunchAgents/com.omar.pythonjob.plist

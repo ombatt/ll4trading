@@ -51,6 +51,9 @@ def print_progress(idx_cur, idx_all):
 def print_analysis_det():
     an_list: list[Analysis] = read_last_analysis()
     print("\n")
+    print("LAST SUMMARY:\n")
+    print(an_list[0].summary)
+    print("\n")
     print(f"DATA                    \tS\tM\tOPEN \tCURR \tFOREC\tDIF  \tADV \tIDX \tVOL    \tCLS  \tCLS% ")
     print(f"------------------------------------------------------------------------------------------------------------------------")
     for an in an_list:
