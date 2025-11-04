@@ -44,6 +44,9 @@ def search_for_news_bulk(str_link: str) -> list[News]:
 
         # ricavo i titolo cover-title e il body dov'è contenuto il corpo dell'articolo
         articles = soup.find(attrs={"data-test": "news-list"})
+        # modifica per gestire sia la lista news che la lista di analisi
+        if articles is None:
+            articles = soup.find(attrs={"data-test": "analysis-list"})
         # ricavo i paragraph dell'articolo
         articles_det = articles.find_all('article')
 
